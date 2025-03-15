@@ -2,6 +2,13 @@ import axios from 'axios'
 import Echo from 'laravel-echo'
 import Pusher from 'pusher-js'
 
+declare global {
+    interface Window {
+        Pusher: typeof Pusher
+        Echo: Echo
+    }
+}
+
 window.axios = axios
 
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
@@ -17,3 +24,7 @@ window.Echo = new Echo({
     forceTLS: (import.meta.env.VITE_REVERB_SCHEME ?? 'https') === 'https',
     enabledTransports: ['ws', 'wss'],
 })
+
+// Configure Axios for Sanctum (CSRF and credentials)
+axios.defaults.withCredentials = true
+axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'

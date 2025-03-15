@@ -6,8 +6,6 @@ interface ReactiveProps<T> {
     children: (value: T) => ReactNode
 }
 
-export function Reactive<T>(props: ReactiveProps<T>) {
-    const $ReactiveComponent = reactive(props.$value)
-
-    return <$ReactiveComponent>{props.children}</$ReactiveComponent>
-}
+export const Reactive = reactive(function Reactive<T>({ $value, children }: ReactiveProps<T>) {
+    return children($value.get())
+})

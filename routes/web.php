@@ -1,9 +1,12 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\StateController;
 
-Route::get('/', function () {
-    return ['Laravel' => app()->version()];
+Route::permanentRedirect('/', '/login');
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/state', [StateController::class, 'get']);
+    Route::post('/state', [StateController::class, 'set']);
 });
 
 require __DIR__.'/auth.php';
