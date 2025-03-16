@@ -1,12 +1,16 @@
 <?php
 
-use App\Http\Controllers\Api\StateController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PageController;
 
-Route::permanentRedirect('/', '/login');
+//Route::permanentRedirect('/', '/login');
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/state', [StateController::class, 'get']);
-    Route::post('/state', [StateController::class, 'set']);
-});
+Route::get('/', PageController::class);
 
-require __DIR__.'/auth.php';
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+
+//Route::middleware('auth:sanctum')->group(function () {
+//});
+
+// require __DIR__.'/auth.php';

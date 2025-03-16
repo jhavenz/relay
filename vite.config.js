@@ -7,15 +7,18 @@ import { defineConfig } from 'vite'
 export default defineConfig({
     plugins: [
         laravel({
-            input: ['resources/css/app.css', 'resources/js/app.js'],
+            input: ['resources/css/app.css', 'resources/js/index.ts'],
             refresh: true,
         }),
         tailwindcss(),
         react(),
     ],
+    // esbuild: {
+    //     jsx: 'automatic',
+    // },
     resolve: {
         alias: {
-            '@': path.resolve(__dirname, './src'),
+            '@': path.resolve(__dirname, './resources/js'),
         },
         extensions: ['.js', '.jsx', '.ts', '.tsx'],
     },

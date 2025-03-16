@@ -16,6 +16,8 @@ class AppServiceProvider extends ServiceProvider
         Model::shouldBeStrict(!app()->isProduction());
 
         Date::useClass(CarbonImmutable::class);
+
+        $this->registerBladeDirectives();
     }
 
     public function boot(): void
@@ -23,5 +25,10 @@ class AppServiceProvider extends ServiceProvider
         ResetPassword::createUrlUsing(function (object $notifiable, string $token) {
             return config('app.frontend_url')."/password-reset/$token?email={$notifiable->getEmailForPasswordReset()}";
         });
+    }
+
+    private function registerBladeDirectives()
+    {
+       //
     }
 }

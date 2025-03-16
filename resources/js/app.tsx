@@ -1,13 +1,10 @@
-import { Button } from '@/components/ui/button' // Add via `npx shadcn-ui@latest add button`
-import { createRoot } from 'react-dom/client'
-import './bootstrap'
-import { Reactive } from './Components/Reactive'
-import './echo'
-import { useReactiveStore } from './Hooks/use-reactive-store'
-import { store$ } from './store'
+import { Button } from '@/components/ui/button'
+import { Reactive } from '@/relay/components/Reactive'
+import { store$ } from '@/store'
+import { useObservable } from '@legendapp/state/react'
 
 const App = () => {
-    const store = useReactiveStore()
+    const store = useObservable(store$)
 
     const updateState = () => {
         store$.message.set(`Updated at ${new Date().toLocaleTimeString()}`)
@@ -15,11 +12,10 @@ const App = () => {
 
     return (
         <div className="p-4">
-            <Reactive $value={store.message}>{(value: string) => <div className="mb-4">{value}</div>}</Reactive>
+            <Reactive $value={store$.message}>{(value: any) => <div>{value}</div>}</Reactive>
             <Button onClick={updateState}>Update State</Button>
         </div>
     )
 }
 
-const root = createRoot(document.getElementById('app')!)
-root.render(<App />)
+export default App

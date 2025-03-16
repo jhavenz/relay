@@ -13,8 +13,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->redirectGuestsTo('/login');
-        $middleware->redirectUsersTo('/dashboard');
+        //$middleware->redirectGuestsTo('/login');
+        //$middleware->redirectUsersTo('/dashboard');
 
         $middleware->api(prepend: [
             EnsureFrontendRequestsAreStateful::class,

@@ -1,32 +1,34 @@
 import { observable } from '@legendapp/state'
+import { ObservablePersistLocalStorage } from '@legendapp/state/persist-plugins/local-storage'
 import { syncObservable } from '@legendapp/state/sync'
 import axios from 'axios'
+
+let initialState = {
+    message: 'Hello from synced state!',
+}
 
 export function setupStore(initialState = {}, options = {}) {
     const store$ = observable(initialState)
 
-    const defaultOptions = {
+    syncObservable(store$, {
         get: async () => {
             const response = await axios.get('/api/state')
             return response.data
         },
-        set: async ({ value }: { value: any }) => {
-            await axios.post('/api/state', { state: value })
+        set: async ({ value$ }) => {
+            console.log('Saving state:', value$.get())
+
+            await axios.post('/api/state', { state: value$.get() })
         },
         transform: {},
-    }
-
-    syncObservable(store$, {
-        ...defaultOptions,
         ...options,
         persist: {
             name: 'store',
+            plugin: ObservablePersistLocalStorage,
         },
     })
 
     return store$
 }
 
-export const store$ = setupStore({
-    message: 'Hello from synced state!',
-})
+export const store$ = setupStore(initialState)

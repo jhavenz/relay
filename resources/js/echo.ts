@@ -1,14 +1,21 @@
+import { authRelay } from '@/auth-relay'
 import Echo from 'laravel-echo'
-import { store$ } from './store'
 
 // Declare global Echo on window
 declare global {
     interface Window {
-        Echo: Echo
+        Echo: Echo<'reverb'>
     }
 }
 
-// Listen to the 'state' channel for StateUpdated events
-window.Echo.channel('state').listen('StateUpdated', (e: { state: any }) => {
-    store$.set(e.state)
-})
+function setupBroadcastListeners() {
+    const channel = window.Echo.channel('auth')
+    Object.entries(authRelay.broadcasts).forEach(([event, handler]) => {
+        channel.listen(`.${event}`, (e) => handler(e))
+    })
+}
+
+setupBroadcastListeners()
+
+// Call this after defining resources
+setupWebSocketListeners()
