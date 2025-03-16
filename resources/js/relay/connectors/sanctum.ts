@@ -7,6 +7,7 @@ export type ConnectorConfig = {
 }
 
 export type SanctumConfig = ConnectorConfig & {
+    name: string
     init: (axios: AxiosInstance) => void
     signInEndpoint?: string
     signOutEndpoint?: string

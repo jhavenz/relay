@@ -1,13 +1,14 @@
 import { RelayConnection } from '@/relay/connection'
 import { RelayConfig } from '@/relay/hooks/define-relay'
+import { RelayProviderProps } from '@/relay/hooks/use-relay-context'
 import axios from 'axios'
 import Echo from 'laravel-echo'
 import { Broadcaster } from 'laravel-echo/src/echo'
 import { ApiConfig, BroadcastConfig, ConnectorConfig, ConnectorName, SanctumConfig } from './connectors/types'
 
-class RelayManager<C, T> {
+class RelayManager<C, T extends ConnectorConfig> {
     private connected: Record<string, boolean> = {}
-    private connectorConfigs: Record<string, ConnectorConfig> = {}
+    private connectorConfigs: Record<string, T> = {}
     private connections: Record<string, RelayConnection<C>> = {}
     private relays: Record<string, RelayConfig<T>> = {}
 
@@ -33,8 +34,13 @@ class RelayManager<C, T> {
         }
     }
 
-    addConnectors(...connectorConfigs: (() => ConnectorConfig)[]) {
+    addConnectors(...connectorConfigs: RelayProviderProps<T>['connectorConfigs'][]) {
         for (const c of connectorConfigs) {
+            if (Array.isArray(c)) {
+                this.addConnectors(...c)
+                continue
+            }
+
             const _config = c()
             const name = _config.name
 

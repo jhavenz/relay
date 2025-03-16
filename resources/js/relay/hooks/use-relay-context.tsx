@@ -2,8 +2,8 @@ import { ConnectorConfig } from '@/relay/connectors/types'
 import RelayManager from '@/relay/manager'
 import { createContext, ReactNode, useContext, useEffect } from 'react'
 
-interface RelayProviderProps {
-    connectorConfigs: (() => ConnectorConfig)[] | (() => ConnectorConfig)
+export interface RelayProviderProps<T extends ConnectorConfig> {
+    connectorConfigs: (() => T)[] | (() => T)
     children: ReactNode
 }
 
