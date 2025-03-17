@@ -1,30 +1,11 @@
-import { RelayConnection } from '@/relay/connection'
-import { Connector } from '@/relay/connectors/types'
 import RelayManager from '@/relay/manager'
-import { AxiosInstance } from 'axios'
+import { Connection, RelayConfig, RelayState } from '@/relay/types'
 
-export type QueryArgs = {
-    payload: Record<any, any>
-    axios?: AxiosInstance
-}
-
-export type BroadcastArgs = {
-    payload: Record<any, any>
-    // an open connection using 'echo.js'
-    socket?: any
-}
-
-export type RelayConfig<T = null> = {
-    name: string
-    endpoint?: string
-    primaryKey?: string
-    state?: T
-    init: (connector: Connector) => void
-    queries?: Record<string, (args: QueryArgs) => any>
-    broadcasts?: Record<string, (args: BroadcastArgs) => any>
-}
-
-export function defineRelay<T = {}>(config: RelayConfig<T>): RelayConnection<T> {
+export function defineRelay<
+    T extends RelayState,
+    Q extends Record<string, Function> | undefined,
+    B extends Record<string, Function> | undefined,
+>(config: RelayConfig<T, Q, B>): Connection<T> {
     RelayManager.registerRelay(config)
 
     return RelayManager.connection(config.name)

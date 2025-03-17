@@ -1,27 +1,28 @@
-import { relays$ } from '@/relays'
-import defineRelay from '@/relays/define-relay'
-import { useSelector } from '@legendapp/state/react'
+import { useRelayContext } from '@/relay/hooks/use-relay-context'
+import { Connection, RelayState } from '@/relay/types'
 
-export function useRelay<T>(
-    relayName: string,
-    queryFn?: (query: ReturnType<typeof defineRelay<T>>['query']) => ReturnType<typeof defineRelay<T>>['query']
-) {
-    const relay = relays$.get()[relayName]
-    if (!relay) throw new Error(`relay '${relayName}' not defined`)
+export function useRelay<T extends RelayState>(relayName: string): Connection<T> {
+    const relayManager = useRelayContext()
+    const connection = relayManager.connection(relayName) as Connection<T>
 
-    const { state } = relay
-
-    if (queryFn) {
-        const queryBuilder = queryFn(relay.config.model?.query())
-        // For simplicity, fetch data on first render; later, we can serialize and cache
-        // Placeholder for now
-        return useSelector(() => state.data.get()) // Eventually, filter based on query params or fetch
+    if (!connection) {
+        throw new Error(`Relay '${relayName}' not found. Ensure it is defined with defineRelay.`)
     }
 
-    return {
-        data: useSelector(() => state.data.get()),
-        loading: useSelector(() => state.loading.get()),
-        error: useSelector(() => state.error.get()),
-        query: relay.config.model?.query,
-    }
+    return connection
 }
+
+// Example usage:
+/*
+const authRelay = defineRelay({
+    name: 'auth',
+    state: { user: null, authenticated: false },
+    init: (connector) => { connector.connect(); },
+    queries: {
+        login: ({ payload }) => axios.post('/login', payload),
+    },
+});
+
+const { queryBuilder, getState } = useRelay('auth');
+const state = getState();
+*/
